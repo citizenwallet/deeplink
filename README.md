@@ -1,2 +1,3 @@
-# deeplink
-Deeplink app.citizenwallet.xyz
+# Deep link
+
+redirect for app.citizenwallet.xyz
