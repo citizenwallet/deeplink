@@ -4,6 +4,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { ConfigService } from "@citizenwallet/sdk";
 
 export default function Home() {
   const router = useRouter();
@@ -37,6 +38,30 @@ export default function Home() {
           default:
             break;
         }
+      } else {
+        // TODO: REMOVE HARD CODED STUFF
+
+        // go to web wallet
+        const getAndNav = async () => {
+          const configService = new ConfigService();
+
+          // const params = new URLSearchParams(hash.substring(2));
+
+          const match = hash.match(/alias=([^&]*)/);
+          const alias = match ? match[1] : null;
+
+          // const alias = params.get("alias");
+
+          console.log("alias", alias);
+
+          const config = await configService.getBySlug(alias);
+
+          if (config) {
+            router.replace(`https://bread.citizenwallet.xyz/#/${hash}`);
+          }
+        };
+
+        getAndNav();
       }
     }
 
