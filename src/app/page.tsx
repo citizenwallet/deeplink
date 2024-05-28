@@ -4,7 +4,8 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ConfigService } from "@citizenwallet/sdk";
+import { ConfigService, generateCommunityUrl } from "@citizenwallet/sdk";
+import Image from "next/image";
 
 export default function Home() {
   const router = useRouter();
@@ -39,25 +40,19 @@ export default function Home() {
             break;
         }
       } else {
-        // TODO: REMOVE HARD CODED STUFF
-
         // go to web wallet
         const getAndNav = async () => {
           const configService = new ConfigService();
 
-          // const params = new URLSearchParams(hash.substring(2));
-
           const match = hash.match(/alias=([^&]*)/);
           const alias = match ? match[1] : null;
-
-          // const alias = params.get("alias");
-
-          console.log("alias", alias);
 
           const config = await configService.getBySlug(alias);
 
           if (config) {
-            router.replace(`https://bread.citizenwallet.xyz/#/${hash}`);
+            const communityUrl = generateCommunityUrl(config.community);
+
+            router.replace(`${communityUrl}/#/${hash}`);
           }
         };
 
@@ -82,14 +77,24 @@ export default function Home() {
               className="store-icon"
               href="https://apps.apple.com/us/app/citizen-wallet/id6460822891"
             >
-              <img src="/app_store.svg" height="120" width="120" />
+              <Image
+                src="/app_store.svg"
+                alt="App Store icon"
+                height={120}
+                width={120}
+              />
             </a>
             <div className="space"></div>
             <a
               className="store-icon"
               href="https://play.google.com/store/apps/details?id=xyz.citizenwallet.wallet"
             >
-              <img src="/play_store.svg" height="120" width="120" />
+              <Image
+                src="/play_store.svg"
+                alt="Play Store icon"
+                height={120}
+                width={120}
+              />
             </a>
           </div>
           <div className="my-10 text-center">
