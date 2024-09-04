@@ -17,7 +17,6 @@ export default function Home() {
     if (hash) {
       // Do something with the hash
       const params = new URLSearchParams(hash.substring(2));
-
       const match = hash.match(/dl=([^&]*)/);
       const deeplink = match ? match[1] : null;
       if (deeplink) {
@@ -40,7 +39,7 @@ export default function Home() {
             break;
         }
       } else {
-        // go to web wallet
+        // try to open app or go to web wallet
         const getAndNav = async () => {
           const configService = new ConfigService();
 
@@ -52,7 +51,14 @@ export default function Home() {
           if (config) {
             const communityUrl = generateCommunityUrl(config.community);
 
-            router.replace(`${communityUrl}/#/${hash}`);
+            try {
+              console.log(`citizenwallet://${alias}${window.location.hash}`);
+              router.replace(`citizenwallet://${alias}${window.location.hash}`);
+            } catch (e) {
+              console.log(`${communityUrl}/#/${hash}`);
+              console.error(e);
+              router.replace(`${communityUrl}/#/${hash}`);
+            }
           }
         };
 
