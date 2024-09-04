@@ -27,9 +27,10 @@ export default function Home() {
             const faucetParamsTokens = new URLSearchParams(faucetParams);
             const alias = faucetParamsTokens.get("alias");
             if (alias) {
+              console.log(`citizenwallet://${alias}/${window.location.hash}`);
               try {
                 router.replace(
-                  `citizenwallet://${alias}${window.location.hash}`
+                  `citizenwallet://${alias}/${window.location.hash}`
                 );
               } catch (_) {}
             }
