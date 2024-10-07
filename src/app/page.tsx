@@ -56,11 +56,9 @@ export default function Home() {
                 `citizenwallet://${alias}/${window.location.hash}`
               );
             } catch (e) {
-              console.log(`${communityUrl}/#/${hash}`);
-              console.error(e);
-              router.replace(`${communityUrl}/#/${hash}`);
-              setCommunityWebUrl(`${communityUrl}/#/${hash}`);
+              console.error(e);          
             }
+            setCommunityWebUrl(`${communityUrl}/#/${hash}`);
             break;
 
           default:
@@ -84,11 +82,10 @@ export default function Home() {
           console.log(`citizenwallet://${alias}${window.location.hash}`);
           router.replace(`citizenwallet://${alias}${window.location.hash}`);
         } catch (e) {
-          console.log(`${communityUrl}/#/${hash}`);
           console.error(e);
-          router.replace(`${communityUrl}/#/${hash}`);
-          setCommunityWebUrl(`${communityUrl}/#/${hash}`);
+
         }
+        setCommunityWebUrl(`${communityUrl}/#/${hash}`);
       };
 
       getAndNav();
