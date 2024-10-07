@@ -27,6 +27,7 @@ export default function Home() {
     const hash = window.location.hash.substring(2);
 
     if (!hash) {
+      setShowStoreLinks(true);
       return;
     }
 
