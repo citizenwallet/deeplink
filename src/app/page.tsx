@@ -30,6 +30,25 @@ export default function Home() {
       return;
     }
 
+    const getAndNav = async () => {
+      const match = hash.match(/alias=([^&]*)/);
+      const alias = match ? match[1] : null;
+
+      if (!alias) {
+        return;
+      }
+
+      const communityUrl = await getCommunityUrl(alias);
+
+      try {
+        console.log(`citizenwallet://${alias}${window.location.hash}`);
+        router.replace(`citizenwallet://${alias}${window.location.hash}`);
+      } catch (e) {
+        console.error(e);
+      }
+      setCommunityWebUrl(`${communityUrl}/#/${hash}`);
+    };
+
     // Do something with the hash
     const params = new URLSearchParams(hash.substring(2));
     const match = hash.match(/dl=([^&]*)/);
@@ -56,38 +75,19 @@ export default function Home() {
                 `citizenwallet://${alias}/${window.location.hash}`
               );
             } catch (e) {
-              console.error(e);          
+              console.error(e);
             }
             setCommunityWebUrl(`${communityUrl}/#/${hash}`);
             break;
 
           default:
+            getAndNav();
             break;
         }
       };
       handleDeeplink();
     } else {
       // try to open app or go to web wallet
-      const getAndNav = async () => {
-        const match = hash.match(/alias=([^&]*)/);
-        const alias = match ? match[1] : null;
-
-        if (!alias) {
-          return;
-        }
-
-        const communityUrl = await getCommunityUrl(alias);
-
-        try {
-          console.log(`citizenwallet://${alias}${window.location.hash}`);
-          router.replace(`citizenwallet://${alias}${window.location.hash}`);
-        } catch (e) {
-          console.error(e);
-
-        }
-        setCommunityWebUrl(`${communityUrl}/#/${hash}`);
-      };
-
       getAndNav();
     }
 
