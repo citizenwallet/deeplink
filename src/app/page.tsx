@@ -36,8 +36,6 @@ export default function Home() {
       const match = hash.match(/alias=([^&]*)/);
       const alias = match ? match[1] : null;
 
-      console.log(alias);
-
       if (!alias) {
         return;
       }
@@ -46,18 +44,12 @@ export default function Home() {
 
       const webWalletUrl = `${communityUrl}/#/${hash}`;
 
-      console.log(openWebWallet);
-      console.log(webWalletUrl);
-
       try {
-        router.replace(`citizenwallet://${alias}${window.location.hash}`);
+        window.open(`citizenwallet://${alias}${window.location.hash}`);
       } catch (e) {
-        console.log("error: ", e);
-        console.log("openWebWallet: ", openWebWallet);
         console.error(e);
         if (openWebWallet) {
-          console.log("opening web wallet: ", webWalletUrl);
-          router.replace(webWalletUrl);
+          window.open(webWalletUrl);
         }
       }
       setCommunityWebUrl(webWalletUrl);
@@ -103,7 +95,6 @@ export default function Home() {
     } else {
       // try to open app or go to web wallet
       if (hash.includes("voucher=")) {
-        console.log("voucher: ", hash);
         getAndNav(true);
         return;
       }
