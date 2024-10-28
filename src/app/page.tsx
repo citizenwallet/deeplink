@@ -26,13 +26,17 @@ export default function Home() {
   useEffect(() => {
     const hash = window.location.hash.substring(2);
 
+    console.log(hash);
+
     if (!hash) {
       return;
     }
 
-    const getAndNav = async () => {
+    const getAndNav = async (openWebWallet: boolean = false) => {
       const match = hash.match(/alias=([^&]*)/);
       const alias = match ? match[1] : null;
+
+      console.log(alias);
 
       if (!alias) {
         return;
@@ -40,13 +44,23 @@ export default function Home() {
 
       const communityUrl = await getCommunityUrl(alias);
 
+      const webWalletUrl = `${communityUrl}/#/${hash}`;
+
+      console.log(openWebWallet);
+      console.log(webWalletUrl);
+
       try {
-        console.log(`citizenwallet://${alias}${window.location.hash}`);
         router.replace(`citizenwallet://${alias}${window.location.hash}`);
       } catch (e) {
+        console.log("error: ", e);
+        console.log("openWebWallet: ", openWebWallet);
         console.error(e);
+        if (openWebWallet) {
+          console.log("opening web wallet: ", webWalletUrl);
+          router.replace(webWalletUrl);
+        }
       }
-      setCommunityWebUrl(`${communityUrl}/#/${hash}`);
+      setCommunityWebUrl(webWalletUrl);
     };
 
     // Do something with the hash
@@ -88,6 +102,12 @@ export default function Home() {
       handleDeeplink();
     } else {
       // try to open app or go to web wallet
+      if (hash.includes("voucher=")) {
+        console.log("voucher: ", hash);
+        getAndNav(true);
+        return;
+      }
+
       getAndNav();
     }
 
