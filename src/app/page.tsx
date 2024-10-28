@@ -44,14 +44,27 @@ export default function Home() {
 
       const webWalletUrl = `${communityUrl}/#/${hash}`;
 
-      try {
-        window.open(`citizenwallet://${alias}${window.location.hash}`);
-      } catch (e) {
-        console.error(e);
-        if (openWebWallet) {
-          window.open(webWalletUrl);
-        }
-      }
+      // Try to open the deep link
+      setTimeout(() => {
+        const fallback = () => {
+          if (openWebWallet) {
+            router.replace(webWalletUrl);
+          }
+        };
+
+        const iframe = document.createElement("iframe");
+        iframe.style.display = "none";
+        iframe.src = `citizenwallet://${alias}${window.location.hash}`;
+
+        document.body.appendChild(iframe);
+
+        // If the deep link fails, this will run after a short delay
+        setTimeout(() => {
+          document.body.removeChild(iframe);
+          fallback();
+        }, 2000);
+      }, 100);
+
       setCommunityWebUrl(webWalletUrl);
     };
 
@@ -81,6 +94,7 @@ export default function Home() {
                 `citizenwallet://${alias}/${window.location.hash}`
               );
             } catch (e) {
+              console.log("ERROR");
               console.error(e);
             }
             setCommunityWebUrl(`${communityUrl}/#/${hash}`);
