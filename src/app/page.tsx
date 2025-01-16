@@ -9,10 +9,10 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Loader2 } from "lucide-react";
-import { isInAppBrowser } from "./utils";
+import { getWindow, isInAppBrowser } from "./utils";
 
 export default function Home() {
-  const hash = window.location.hash.substring(2) ?? "";
+  const hash = getWindow()?.location?.hash?.substring(2) ?? "";
   const router = useRouter();
 
   const [showStoreLinks, setShowStoreLinks] = useState(false);
@@ -52,7 +52,7 @@ export default function Home() {
 
         const iframe = document.createElement("iframe");
         iframe.style.display = "none";
-        iframe.src = `citizenwallet://${alias}${window.location.hash}`;
+        iframe.src = `citizenwallet://${alias}${getWindow().location.hash}`;
 
         document.body.appendChild(iframe);
 
@@ -93,9 +93,11 @@ export default function Home() {
             const communityUrl = await getCommunityUrl(alias);
 
             try {
-              console.log(`citizenwallet://${alias}/${window.location.hash}`);
+              console.log(
+                `citizenwallet://${alias}/${getWindow().location.hash}`
+              );
               router.replace(
-                `citizenwallet://${alias}/${window.location.hash}`
+                `citizenwallet://${alias}/${getWindow().location.hash}`
               );
             } catch (e) {
               console.log("ERROR");
