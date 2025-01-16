@@ -2,18 +2,22 @@
 
 // /#/?dl=faucet-v1&faucet-v1=alias%3Dwallet.wolugo.be%26address%3D0x6a5c6c77789115315d162B6659e666C52d30717F
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ConfigService, generateCommunityUrl } from "@citizenwallet/sdk";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { Loader2 } from "lucide-react";
+import { isInAppBrowser } from "./utils";
 
 export default function Home() {
+  const hash = window.location.hash.substring(2) ?? "";
   const router = useRouter();
 
   const [showStoreLinks, setShowStoreLinks] = useState(false);
   const [communityWebUrl, setCommunityWebUrl] = useState("");
+  const [opening, setOpening] = useState(false);
 
   const getCommunityUrl = async (alias: string): Promise<string> => {
     const configService = new ConfigService();
@@ -23,22 +27,16 @@ export default function Home() {
     return communityUrl;
   };
 
-  useEffect(() => {
-    const hash = window.location.hash.substring(2);
-
-    console.log(hash);
-
-    if (!hash) {
-      return;
-    }
-
-    const getAndNav = async (openWebWallet: boolean = false) => {
+  const getAndNav = useCallback(
+    async (openWebWallet: boolean = false) => {
       const match = hash.match(/alias=([^&]*)/);
       const alias = match ? match[1] : null;
 
       if (!alias) {
         return;
       }
+
+      setOpening(true);
 
       const communityUrl = await getCommunityUrl(alias);
 
@@ -60,13 +58,19 @@ export default function Home() {
 
         // If the deep link fails, this will run after a short delay
         setTimeout(() => {
+          setOpening(false);
           document.body.removeChild(iframe);
           fallback();
         }, 2000);
       }, 100);
 
       setCommunityWebUrl(webWalletUrl);
-    };
+    },
+    [router, hash]
+  );
+
+  useEffect(() => {
+    console.log(hash);
 
     // Do something with the hash
     const params = new URLSearchParams(hash.substring(2));
@@ -119,7 +123,9 @@ export default function Home() {
     setTimeout(() => {
       setShowStoreLinks(true);
     }, 1000);
-  }, [router]);
+  }, [router, hash, getAndNav]);
+
+  const potentiallyInAppBrowser = isInAppBrowser();
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
@@ -154,6 +160,35 @@ export default function Home() {
           <div className="my-10 text-center">
             <p>Then scan the QR code again.</p>
           </div>
+          <div className="flex row gap-5 items-center">
+            <div className="bg-gray-300 h-px w-full" />
+            <p className="text-sm text-gray-500 uppercase">OR</p>
+            <div className="bg-gray-300 h-px w-full" />
+          </div>
+
+          <div className="my-5" />
+
+          <div className="my-2 text-center">
+            {potentiallyInAppBrowser ? (
+              <p>
+                Make sure you are running this in your browser, not in an app
+              </p>
+            ) : (
+              <p>I already have the app</p>
+            )}
+          </div>
+
+          <Button
+            className="mb-10"
+            onClick={() => getAndNav()}
+            disabled={opening}
+          >
+            {opening ? (
+              <Loader2 className="w-4 h-4 animate-spin ml-2" />
+            ) : (
+              "Open in Citizen Wallet 📱"
+            )}
+          </Button>
 
           {communityWebUrl && (
             <>
@@ -165,8 +200,19 @@ export default function Home() {
 
               <div className="my-5" />
 
+              <div className="my-2 text-center">
+                {potentiallyInAppBrowser ? (
+                  <p>
+                    Make sure you are running this in your browser, not in an
+                    app
+                  </p>
+                ) : (
+                  <p>No download needed</p>
+                )}
+              </div>
+
               <Button asChild>
-                <Link href={communityWebUrl}>Open on web</Link>
+                <Link href={communityWebUrl}>Open in Web Browser 🌐</Link>
               </Button>
             </>
           )}
