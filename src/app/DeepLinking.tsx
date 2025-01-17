@@ -42,49 +42,45 @@ export default function Home({ communities }: { communities: Config[] }) {
   const [alias, setAlias] = useState("");
   const [opening, setOpening] = useState(false);
 
-  const getAndNav = useCallback(
-    async (openWebWallet: boolean = false) => {
-      const match = hash.match(/alias=([^&]*)/);
-      const alias = match ? match[1] : null;
+  const refreshPage = () => {
+    if (typeof window !== "undefined") {
+      window.location.reload();
+    }
+  };
 
-      setAlias(alias);
+  const getAndNav = useCallback(async () => {
+    const match = hash.match(/alias=([^&]*)/);
+    const alias = match ? match[1] : null;
 
-      if (!alias) {
-        return;
-      }
+    const openWebWalletDirectly =
+      alias && shouldShowWebLink(alias) && hash.includes("voucher=");
 
-      setOpening(true);
+    setAlias(alias);
 
-      const communityUrl = await getCommunityUrl(alias, communities);
+    if (!alias) {
+      return;
+    }
 
-      const webWalletUrl = `${communityUrl}/#/${hash}`;
+    setOpening(true);
 
-      // Try to open the deep link
-      setTimeout(() => {
-        const fallback = () => {
-          if (openWebWallet) {
-            router.replace(webWalletUrl);
-          }
-        };
+    const communityUrl = await getCommunityUrl(alias, communities);
 
-        const iframe = document.createElement("iframe");
-        iframe.style.display = "none";
-        iframe.src = `citizenwallet://${alias}${getWindow().location.hash}`;
+    const webWalletUrl = `${communityUrl}/#/${hash}`;
 
-        document.body.appendChild(iframe);
+    setTimeout(() => {
+      setOpening(false);
+      setShowStoreLinks(!openWebWalletDirectly);
+    }, 250);
 
-        // If the deep link fails, this will run after a short delay
-        setTimeout(() => {
-          setOpening(false);
-          document.body.removeChild(iframe);
-          fallback();
-        }, 2000);
-      }, 100);
+    // Try to open the deep link
+    if (openWebWalletDirectly) {
+      router.replace(webWalletUrl);
+    } else {
+      router.replace(`citizenwallet://${alias}/${getWindow().location.hash}`);
+    }
 
-      setCommunityWebUrl(webWalletUrl);
-    },
-    [router, hash, communities]
-  );
+    setCommunityWebUrl(webWalletUrl);
+  }, [router, hash, communities]);
 
   useEffect(() => {
     console.log(hash);
@@ -132,24 +128,8 @@ export default function Home({ communities }: { communities: Config[] }) {
       };
       handleDeeplink();
     } else {
-      const match = hash.match(/alias=([^&]*)/);
-      const alias = match ? match[1] : null;
-
-      const shouldShowWeb = alias && shouldShowWebLink(alias);
-
-      // try to open app or go to web wallet
-      if (hash.includes("voucher=") && shouldShowWeb) {
-        getAndNav(shouldShowWeb);
-        return;
-      }
-
       getAndNav();
     }
-
-    setTimeout(() => {
-      console.log(">>>>> set showStoreLinks to true");
-      setShowStoreLinks(true);
-    }, 1000);
   }, [router, hash, getAndNav, communities]);
 
   const potentiallyInAppBrowser = isInAppBrowser();
@@ -204,11 +184,7 @@ export default function Home({ communities }: { communities: Config[] }) {
             )}
           </div>
 
-          <Button
-            className="mb-10"
-            onClick={() => getAndNav()}
-            disabled={opening}
-          >
+          <Button className="mb-10" onClick={refreshPage} disabled={opening}>
             {opening ? (
               <Loader2 className="w-4 h-4 animate-spin ml-2" />
             ) : (
