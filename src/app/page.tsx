@@ -1,4 +1,4 @@
-import { getCommunityUrl } from "@/cw";
+import { getCommunities } from "@/cw";
 import DeepLinking from "./DeepLinking";
 import { Suspense } from "react";
 
@@ -19,7 +19,7 @@ export default function Page() {
 }
 
 async function AsyncPage() {
-  const communities = await getCommunityUrl();
+  const communities = await getCommunities();
 
   return <DeepLinking communities={communities} />;
 }
