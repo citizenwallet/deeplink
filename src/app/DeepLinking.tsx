@@ -4,7 +4,7 @@
 
 import React, { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { CommunityConfig } from "@citizenwallet/sdk";
+import { CommunityConfig, Config } from "@citizenwallet/sdk";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -15,22 +15,24 @@ import { shouldShowWebLink } from "@/cw";
 
 const getCommunityUrl = async (
   alias: string,
-  communities: CommunityConfig[]
+  communities: Config[]
 ): Promise<string> => {
   try {
-    const community = communities.find((c: any) => c.slug === alias);
+    const config = communities.find((c: Config) => c.community.alias === alias);
+    if (!config) {
+      return "";
+    }
+
+    const community = new CommunityConfig(config);
 
     return community.communityUrl("app.citizenwallet.xyz");
   } catch (error) {
+    console.log("error", error);
     return "";
   }
 };
 
-export default function Home({
-  communities,
-}: {
-  communities: CommunityConfig[];
-}) {
+export default function Home({ communities }: { communities: Config[] }) {
   const t = useTranslations("deepLinking");
   const hash = getWindow()?.location?.hash?.substring(2) ?? "";
   const router = useRouter();
@@ -130,9 +132,14 @@ export default function Home({
       };
       handleDeeplink();
     } else {
+      const match = hash.match(/alias=([^&]*)/);
+      const alias = match ? match[1] : null;
+
+      const shouldShowWeb = alias && shouldShowWebLink(alias);
+
       // try to open app or go to web wallet
-      if (hash.includes("voucher=")) {
-        getAndNav(true);
+      if (hash.includes("voucher=") && shouldShowWeb) {
+        getAndNav(shouldShowWeb);
         return;
       }
 
@@ -140,6 +147,7 @@ export default function Home({
     }
 
     setTimeout(() => {
+      console.log(">>>>> set showStoreLinks to true");
       setShowStoreLinks(true);
     }, 1000);
   }, [router, hash, getAndNav, communities]);
