@@ -1,0 +1,18 @@
+{
+    "deepLinking": {
+        "downloadTitle": "Download de {wallet} app om door te gaan",
+        "walletName": "Citizen Wallet",
+        "scanAgain": "Scan dan de QR-code opnieuw",
+        "or": "OF",
+        "alreadyHaveApp": "Ik heb de app al",
+        "inAppBrowserWarning": "Zorg ervoor dat je dit in je browser uitvoert, niet in een app",
+        "noDownloadNeeded": "Geen download nodig",
+        "openInApp": "Open in Citizen Wallet 📱",
+        "openInBrowser": "Open in webbrowser 🌐",
+        "loading": "Laden...",
+        "stores": {
+            "appStore": "App Store",
+            "playStore": "Play Store"
+        }
+    }
+}
