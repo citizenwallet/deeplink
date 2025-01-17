@@ -11,6 +11,7 @@ import Link from "next/link";
 import { Loader2 } from "lucide-react";
 import { getWindow, isInAppBrowser } from "./utils";
 import { useTranslations } from "next-intl";
+import { shouldShowWebLink } from "@/cw";
 
 const getCommunityUrl = async (
   alias: string,
@@ -36,12 +37,15 @@ export default function Home({
 
   const [showStoreLinks, setShowStoreLinks] = useState(false);
   const [communityWebUrl, setCommunityWebUrl] = useState("");
+  const [alias, setAlias] = useState("");
   const [opening, setOpening] = useState(false);
 
   const getAndNav = useCallback(
     async (openWebWallet: boolean = false) => {
       const match = hash.match(/alias=([^&]*)/);
       const alias = match ? match[1] : null;
+
+      setAlias(alias);
 
       if (!alias) {
         return;
@@ -97,6 +101,8 @@ export default function Home({
             const faucetParamsTokens = new URLSearchParams(faucetParams);
             const alias = faucetParamsTokens.get("alias");
 
+            setAlias(alias);
+
             if (!alias) {
               return;
             }
@@ -139,6 +145,7 @@ export default function Home({
   }, [router, hash, getAndNav, communities]);
 
   const potentiallyInAppBrowser = isInAppBrowser();
+  const shouldShowWeb = alias && shouldShowWebLink(alias);
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
@@ -201,7 +208,7 @@ export default function Home({
             )}
           </Button>
 
-          {communityWebUrl && (
+          {shouldShowWeb && communityWebUrl && (
             <>
               <div className="flex row gap-5 items-center">
                 <div className="bg-gray-300 h-px w-full" />
