@@ -2,6 +2,8 @@ import { getCommunityUrl } from "@/cw";
 import DeepLinking from "./DeepLinking";
 import { Suspense } from "react";
 
+export const dynamic = "force-dynamic";
+
 export default function Page() {
   return (
     <Suspense
