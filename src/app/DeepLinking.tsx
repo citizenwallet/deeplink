@@ -25,7 +25,7 @@ const getCommunityUrl = async (
 
     const community = new CommunityConfig(config);
 
-    return community.communityUrl("app.citizenwallet.xyz");
+    return community.communityUrl("citizenwallet.xyz");
   } catch (error) {
     console.log("error", error);
     return "";
