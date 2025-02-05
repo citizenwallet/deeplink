@@ -93,7 +93,7 @@ export default function Home({ communities }: { communities: Config[] }) {
     if (deeplink) {
       const handleDeeplink = async () => {
         switch (deeplink) {
-          case "faucet-v1":
+          case "faucet-v1": {
             const faucet = params.get("faucet-v1");
             const faucetParams = decodeURIComponent(faucet);
             const faucetParamsTokens = new URLSearchParams(faucetParams);
@@ -120,7 +120,27 @@ export default function Home({ communities }: { communities: Config[] }) {
             }
             setCommunityWebUrl(`${communityUrl}/#/${hash}`);
             break;
+          }
+          case "plugin": {
+            const plugin = params.get("plugin");
+            const pluginParams = decodeURIComponent(plugin);
+            const pluginParamsTokens = new URLSearchParams(pluginParams);
+            const alias = pluginParamsTokens.get("alias");
 
+            setAlias(alias);
+
+            if (
+              !pluginParams ||
+              typeof pluginParams !== "string" ||
+              !pluginParams.startsWith("http")
+            ) {
+              return;
+            }
+
+            router.replace(pluginParams);
+
+            break;
+          }
           default:
             getAndNav();
             break;
