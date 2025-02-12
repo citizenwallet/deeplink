@@ -2,7 +2,7 @@
 
 // /#/?dl=faucet-v1&faucet-v1=alias%3Dwallet.wolugo.be%26address%3D0x6a5c6c77789115315d162B6659e666C52d30717F
 
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { CommunityConfig, Config } from "@citizenwallet/sdk";
 import Image from "next/image";
@@ -37,6 +37,7 @@ export default function Home({ communities }: { communities: Config[] }) {
   const hash = getWindow()?.location?.hash?.substring(2) ?? "";
   const router = useRouter();
 
+  const fallbackDisplayedRef = useRef(true);
   const [showStoreLinks, setShowStoreLinks] = useState(false);
   const [communityWebUrl, setCommunityWebUrl] = useState("");
   const [alias, setAlias] = useState("");
@@ -68,6 +69,7 @@ export default function Home({ communities }: { communities: Config[] }) {
     const webWalletUrl = `${communityUrl}/#/${hash}`;
 
     setTimeout(() => {
+      fallbackDisplayedRef.current = false;
       setOpening(false);
       setShowStoreLinks(!openWebWalletDirectly);
     }, 250);
@@ -84,6 +86,12 @@ export default function Home({ communities }: { communities: Config[] }) {
 
   useEffect(() => {
     console.log(hash);
+
+    setTimeout(() => {
+      if (fallbackDisplayedRef.current) {
+        setShowStoreLinks(true);
+      }
+    }, 5000);
 
     // Do something with the hash
     const params = new URLSearchParams(hash.substring(2));

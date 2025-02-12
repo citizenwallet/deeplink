@@ -1,6 +1,6 @@
 import { Config } from "@citizenwallet/sdk";
 
-export const disabledWeb = ["seldesalm"];
+export const disabledWeb = ["seldesalm", "boliviapay"];
 
 export const shouldShowWebLink = (alias: string) => {
   return !disabledWeb.includes(alias);
