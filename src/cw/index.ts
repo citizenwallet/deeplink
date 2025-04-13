@@ -30,7 +30,7 @@ export const getCommunityFromHeaders = async (
 
   const alias =
     parseAliasFromDomain(domain, process.env.DOMAIN_BASE_PATH || "") ||
-    "wallet.pay.brussels";
+    "gratitude";
 
   console.log("alias", alias);
 
