@@ -1,4 +1,5 @@
-import { Config } from "@citizenwallet/sdk";
+import { Config, parseAliasFromDomain } from "@citizenwallet/sdk";
+import { ReadonlyHeaders } from "next/dist/server/web/spec-extension/adapters/headers";
 
 export const disabledWeb = ["seldesalm", "boliviapay"];
 
@@ -18,4 +19,24 @@ export const getCommunities = async (): Promise<Config[]> => {
   } catch (error) {
     return [];
   }
+};
+
+export const getCommunityFromHeaders = async (
+  headersList: ReadonlyHeaders
+): Promise<Config | undefined> => {
+  const domain = headersList.get("host") || "";
+
+  console.log("domain", domain);
+
+  const alias =
+    parseAliasFromDomain(domain, process.env.DOMAIN_BASE_PATH || "") ||
+    "wallet.pay.brussels";
+
+  console.log("alias", alias);
+
+  const communities = await getCommunities();
+
+  const community = communities.find((c) => c.community.alias === alias);
+
+  return community;
 };
